@@ -20,70 +20,81 @@ function nodeSelector() {
     YUI().use("node", "json", function(Y) {
         var saved = {};
 
+        var mouseover = function(ev) {
+            if (ev && ev.halt) ev.halt();
+            var e = ev.target;
+            saved[e] = {"border" : e.getStyle("border"), "margin" : e.getStyle("margin")};
+            var names = [
+                         ["borderTopWidth", "marginTop"],
+                         ["borderRightWidth", "marginRight"],
+                         ["borderBottomWidth", "marginBottom"],
+                         ["borderLeftWidth", "marginLeft"],
+                        ];
+            var old = [0, 0, 0, 0];
+            for (var i in names) {
+                for (var j in names[i]) {
+                    old[i] += parseInt(e.getStyle(names[i][j]).replace("px", ""));
+                }
+            }
+            e.setStyle("border", "2px solid red");
+            var margin = "";
+            for (var i in old) {
+                margin += (old[i] - 2) + "px ";
+            }
+            e.setStyle("margin", margin);
+        };
+        var mouseout = function(ev) {
+            if (ev && ev.halt) ev.halt();
+            var e = ev.target;
+            var save = saved[e];
+            if (typeof(save) == "undefined") return;
+
+            e.setStyle("border", save["border"]);
+            e.setStyle("margin", save["margin"]);
+        };
+        var click =  function (ev) {
+            if (ev && ev.halt) ev.halt();
+            var e = ev.target;
+            var xpath = getXpath(e);
+            var node = Y.get("#hover");
+            if (! node)  {
+                var node = Y.Node.create("<div id='hover' style='position:absolute'></div>");
+                node.setStyle("position", "absolute");
+                node.setStyle('border', '1px solid black');
+                node.setStyle('backgroundColor', 'white');
+                node.setStyle('padding', '2px'); 
+                node.setStyle('width', 'auto'); 
+                node.setStyle("zIndex", 255);
+                node.on("click", function(ev) { ev.halt() });
+                Y.get("body").appendChild(node);
+            }
+           
+            node.set("innerHTML", xpath); 
+            node.setStyle('top', (ev.pageY + 5) + "px");
+            node.setStyle('left', (ev.pageX + 5) + "px");
+        };
+        
+
         elements = Y.all("*");
         elements.each(function(e) {
-            e.on("mouseover", function(ev) {
-                if (ev && ev.halt) ev.halt();
-                saved[e] = {"border" : e.getStyle("border"), "margin" : e.getStyle("margin")};
-                var names = [
-                             ["borderTopWidth", "marginTop"],
-                             ["borderRightWidth", "marginRight"],
-                             ["borderBottomWidth", "marginBottom"],
-                             ["borderLeftWidth", "marginLeft"],
-                            ];
-                var old = [0, 0, 0, 0];
-                for (var i in names) {
-                    for (var j in names[i]) {
-                        old[i] += parseInt(e.getStyle(names[i][j]).replace("px", ""));
-                    }
-                }
-                e.setStyle("border", "2px solid red");
-                var margin = "";
-                for (var i in old) {
-                    margin += (old[i] - 2) + "px ";
-                }
-                e.setStyle("margin", margin);
-            });
-            e.on("mouseout", function(ev) {
-                if (ev && ev.halt) ev.halt();
-                var save = saved[e];
-                if (typeof(save) == "undefined") return;
-
-                e.setStyle("border", save["border"]);
-                e.setStyle("margin", save["margin"]);
-            });
-            e.on("click", function (ev) {
-                if (ev && ev.halt) ev.halt();
-                var xpath = getXpath(e);
-                /*
-                var nodes = document.evaluate( xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
-                if (nodes.snapshotLength != 1) {
-                    Y.log("Error, xpath didn't return 1 node : count(" + xpath + ") == " + nodes.snapshotLength);
-                } else {
-                */
-                
-                    var node = Y.get("#hover");
-                    if (! node)  {
-                        var node = Y.Node.create("<div id='hover' style='position:absolute'></div>");
-                        node.setStyle("position", "absolute");
-                        node.setStyle('border', '1px solid black');
-                        node.setStyle('backgroundColor', 'white');
-                        node.setStyle('padding', '2px'); 
-                        node.setStyle('width', 'auto'); 
-                        node.setStyle("zIndex", 255);
-                        node.on("click", function(ev) { ev.halt() });
-                        Y.get("body").appendChild(node);
-                    }
-                   
-                    node.set("innerHTML", xpath); 
-                    node.setStyle('top', (ev.pageY + 5) + "px");
-                    node.setStyle('left', (ev.pageX + 5) + "px");
-                /*
-                }
-                */
-
-            });
+            e.on("mouseover", mouseover);
+            e.on("mouseout", mouseout);
+            e.on("click", click);
         });
+    
+        Y.on("keydown", function(e) {
+            if (typeof(e.keyCode) == "undefined") e.keyCode = e.charCode;
+            // Escape key
+            if (e.keyCode == 27) {
+                Y.all("*").each(function(e) {
+                    e.detach("mouseover", mouseover);
+                    e.detach("mouseout", mouseout);
+                    e.detach("click", click);
+                    mouseout({target : e});
+                });
+                Y.get("#hover").setStyle("display", "none");
+            }
+        }, document);
 
         function getXpath(e) {
                 var xpath = "";
