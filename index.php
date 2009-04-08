@@ -19,3 +19,5 @@ See the xpath to that node.
 </li><li>
 Profit.
 </li></ol>
+
+<a href='http://github.com/ptarjan/nodeselector/'>Open Source (github)</a>
