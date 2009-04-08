@@ -13,9 +13,9 @@ Visit any webpage.
 </li><li>
 Click your newly created bookmark (should be named <b>nodeSelector bookmarklet</b>).
 </li><li>
-Find the interesting number on the page and click it.
+Find the interesting item on the page and click it.
 </li><li>
-See that number graphed over time.
+See the xpath to that node.
 </li><li>
 Profit.
 </li></ol>
