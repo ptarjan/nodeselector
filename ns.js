@@ -10,7 +10,6 @@ ns.addLibs = function () {
     document.body.appendChild(node);
     ns.nodeSelector();
 } 
-ns.addLibs();
 
 ns.nodeSelector = function () {  
     if (typeof($) == "undefined" || $("*") == null) {
@@ -62,10 +61,11 @@ ns.nodeSelector = function () {
 
         var node = $("#hover");
         if (node.size() == 0)  {
-            $(document.body).prepend("<div id='hover' style='position:absolute'></div>");
+            $(document.body).append("<div id='hover' style='position:absolute; display:none'></div>");
             var node = $("#hover");
             node
             .css("position", "absolute")
+            .css("display", "inline")
             .css('border', '1px solid black')
             .css('backgroundColor', 'white')
             .css('padding', '2px')
@@ -137,3 +137,4 @@ ns.nodeSelector = function () {
         return xpath;
     }
 }
+ns.addLibs();
