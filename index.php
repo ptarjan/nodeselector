@@ -26,4 +26,6 @@ Profit.
 <a href='http://github.com/ptarjan/nodeselector/'>Open Source (github)</a>
 </ol><ol>
 <a href='test.html'>See it in action</a>
+</ol><ol>
+<a href='ns.js'>Read the source</a>
 </ol></ul>
