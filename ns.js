@@ -19,7 +19,6 @@ ns.nodeSelector = function () {
 
     // Adding $.log
     if (window.console == undefined) { window.console = {log:function(){}}; };
-    $.log = function() { for(var i=0; i<arguments.length; i++) { window.console.log(arguments[i]); } return $ };
 
     var mouseover = function(ev) {
         ev.stopPropagation();
@@ -36,7 +35,6 @@ ns.nodeSelector = function () {
         ev.stopPropagation();
         var e = $(ev.target);
         save = e.data("saved");
-        $.log("mouseout ", ev.target, save);
         if (typeof(save) == "undefined") return;
         e.removeData("saved");
         for (var i in save) {
@@ -47,7 +45,7 @@ ns.nodeSelector = function () {
         ev.preventDefault(); ev.stopPropagation();
         var e = $(ev.target);
         var xpath = getXpath(ev.target);
-        $.log(xpath);
+        console.log(xpath);
 
         if (typeof(nsDoneURL) != "undefined") {
             if (nsDoneURL.indexOf("?") == -1) nsDoneURL += "?";
@@ -58,7 +56,7 @@ ns.nodeSelector = function () {
                 "referer" : window.location.href
             });
             url = nsDoneURL + url;
-            $.log(url);
+            console.log(url);
             window.location = url;
             return false;
         }
@@ -130,7 +128,7 @@ ns.nodeSelector = function () {
                     }
                 });
                 if (! good) {
-                    $.log("Can't find child, something is wrong with your dom : " + node);
+                    console.log("Can't find child, something is wrong with your dom : " + node);
                     return FALSE;
                 }
             }
