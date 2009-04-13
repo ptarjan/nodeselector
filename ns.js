@@ -38,7 +38,6 @@ paulisageek.ns.nodeSelector = function () {
     var mouseout = function(ev) {
         ev.stopPropagation();
         var e = $(ev.target);
-        console.log("mouseout " + e);
         save = e.data("saved");
         if (typeof(save) == "undefined") return;
         e.removeData("saved");
@@ -98,7 +97,6 @@ paulisageek.ns.nodeSelector = function () {
     
     var keydown = function(e) {
         if (e.keyCode == undefined && e.charCode != undefined) e.keyCode = e.charCode;
-        console.log("keydown " + e.keyCode);
         // Escape key
         if (e.keyCode == 27) {
             $("*").each(function(i) {
@@ -108,7 +106,6 @@ paulisageek.ns.nodeSelector = function () {
                 .unbind("mouseout", mouseout)
                 .unbind("click", click)
                 .mouseout();
-                console.log(this);
             });
             $("#hover").remove();
             $(document).unbind("keydown", keydown);
