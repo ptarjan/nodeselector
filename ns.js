@@ -1,23 +1,27 @@
-var ns = function () {};
-ns.addLibs = function () {
+if (typeof paulisageek == "undefined") { paulisageek = {} }
+// Don't let 2 instances run
+if (typeof paulisageek.ns == "undefined") {
+
+paulisageek.ns = {}
+paulisageek.ns.addLibs = function () {
     if (typeof(document.body) == "undefined" || document.body == null) {
-        setTimeout(ns.addLibs, 100);
+        setTimeout(paulisageek.ns.addLibs, 100);
         return;
     }
 
     node = document.createElement("script");
     node.src = "http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js";
     document.body.appendChild(node);
-    ns.nodeSelector();
+    paulisageek.ns.nodeSelector();
 } 
 
-ns.nodeSelector = function () {  
+paulisageek.ns.nodeSelector = function () {  
     if (typeof($) == "undefined" || $("*") == null) {
-        setTimeout(ns.nodeSelector, 100);
+        setTimeout(paulisageek.ns.nodeSelector, 100);
         return;
     }
 
-    // Adding $.log
+    // Incase Firebug isn't installed
     if (window.console == undefined) { window.console = {log:function(){}}; };
 
     var mouseover = function(ev) {
@@ -34,6 +38,7 @@ ns.nodeSelector = function () {
     var mouseout = function(ev) {
         ev.stopPropagation();
         var e = $(ev.target);
+        console.log("mouseout " + e);
         save = e.data("saved");
         if (typeof(save) == "undefined") return;
         e.removeData("saved");
@@ -91,8 +96,9 @@ ns.nodeSelector = function () {
         });
     // });
     
-    $(document).keydown(function(e) {
+    var keydown = function(e) {
         if (e.keyCode == undefined && e.charCode != undefined) e.keyCode = e.charCode;
+        console.log("keydown " + e.keyCode);
         // Escape key
         if (e.keyCode == 27) {
             $("*").each(function(i) {
@@ -100,11 +106,17 @@ ns.nodeSelector = function () {
                 .mouseout()
                 .unbind("mouseover", mouseover)
                 .unbind("mouseout", mouseout)
-                .unbind("click", click);
+                .unbind("click", click)
+                .mouseout();
+                console.log(this);
             });
-            $("#hover").css("display", "none");
+            $("#hover").remove();
+            $(document).unbind("keydown", keydown);
+            // Kill the namespace
+            delete paulisageek.ns;
         }
-    });
+    };
+    $(document).keydown(keydown);
 
     function getXpath(e) {
         var xpath = "";
@@ -139,4 +151,6 @@ ns.nodeSelector = function () {
         return xpath;
     }
 }
-ns.addLibs();
+paulisageek.ns.addLibs();
+
+}
