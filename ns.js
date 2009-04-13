@@ -20,27 +20,25 @@ ns.nodeSelector = function () {
     // Adding $.log
     if (window.console == undefined) { window.console = {log:function(){}}; };
     $.log = function() { for(var i=0; i<arguments.length; i++) { window.console.log(arguments[i]); } return $ };
-    var saved = {};
 
     var mouseover = function(ev) {
         ev.stopPropagation();
         var e = $(ev.target);
         if (typeof e.css("outline") != "undefined") {
-            saved[ev.target] = {"outline" : e.css("outline")};
+            e.data("saved", {"outline" : e.css("outline")});
             e.css("outline", "red solid medium");
         } else {
-            saved[ev.target] = {"backgroundColor" : e.css("backgroundColor")};
-            e.css(
-                "backgroundColor", "#0cf"
-            );
+            e.data("saved", {"backgroundColor" : e.css("backgroundColor")});
+            e.css("backgroundColor", "#0cf");
         }
     };
     var mouseout = function(ev) {
         ev.stopPropagation();
         var e = $(ev.target);
-        save = saved[ev.target];
+        save = e.data("saved");
+        $.log("mouseout ", ev.target, save);
         if (typeof(save) == "undefined") return;
-        delete saved[ev.target];
+        e.removeData("saved");
         for (var i in save) {
             e.css(i, save[i]);
         }
@@ -67,7 +65,7 @@ ns.nodeSelector = function () {
 
         var node = $("#hover");
         if (node.size() == 0)  {
-            $(document.body).append("<div id='hover' style='position:absolute; display:none'></div>");
+            $(document.body).append("<div id='hover'></div>");
             var node = $("#hover");
             node
             .css("position", "absolute")
@@ -95,7 +93,7 @@ ns.nodeSelector = function () {
         });
     // });
     
-    $(document).keypress(function(e) {
+    $(document).keydown(function(e) {
         if (e.keyCode == undefined && e.charCode != undefined) e.keyCode = e.charCode;
         // Escape key
         if (e.keyCode == 27) {
