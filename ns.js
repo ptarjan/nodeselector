@@ -52,11 +52,17 @@ ns.nodeSelector = function () {
         $.log(xpath);
 
         if (typeof(nsDoneURL) != "undefined") {
-            url = nsDoneURL;
-            if (url.indexOf("?") == -1) url += "?";
-            else url += "&";
-            url += "xpath=" + encodeURIComponent(xpath);
+            if (nsDoneURL.indexOf("?") == -1) nsDoneURL += "?";
+            else nsDoneURL += "&";
+
+            var url = $.param({
+                "xpath" : xpath, 
+                "referer" : window.location.href
+            });
+            url = nsDoneURL + url;
+            $.log(url);
             window.location = url;
+            return false;
         }
 
         var node = $("#hover");
@@ -107,8 +113,8 @@ ns.nodeSelector = function () {
     function getXpath(e) {
         var xpath = "";
     
-        while (e.nodeName.toUpperCase() != "HTML") {
-            var node = e.nodeName;
+        while (e.nodeName.toLowerCase() != "html") {
+            var node = e.nodeName.toLowerCase();
             var id = e.id;
             if (id != undefined && id != null && id != "") {
                 xpath = "//" + node + "[@id='" + id + "']" + xpath;
@@ -133,7 +139,7 @@ ns.nodeSelector = function () {
             xpath = "/" + node + xpath;
             e = parent;
         }
-        xpath = "/HTML" + xpath;
+        xpath = "/html" + xpath;
         return xpath;
     }
 }
