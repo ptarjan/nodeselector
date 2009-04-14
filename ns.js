@@ -1,30 +1,28 @@
-if (typeof paulisageek == "undefined") { paulisageek = {} }
+if (typeof paulisageek == "undefined") { paulisageek = {}; }
 // Don't let 2 instances run
 if (typeof paulisageek.ns == "undefined") {
 
-paulisageek.ns = {}
+paulisageek.ns = {};
 paulisageek.ns.addLibs = function () {
-    if (typeof(document.body) == "undefined" || document.body == null) {
+    if (typeof(document.body) == "undefined" || document.body === null) {
         setTimeout(paulisageek.ns.addLibs, 100);
         return;
     }
 
-    if (typeof($) == "undefined") {
-        node = document.createElement("script");
-        node.src = "http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js";
-        document.body.appendChild(node);
-    }
+    var node = document.createElement("script");
+    node.src = "http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js";
+    document.body.appendChild(node);
     paulisageek.ns.nodeSelector();
-} 
+};
 
 paulisageek.ns.nodeSelector = function () {  
-    if (typeof($) == "undefined" || $("*") == null) {
+    if (typeof($) == "undefined" || $("*") === null) {
         setTimeout(paulisageek.ns.nodeSelector, 100);
         return;
     }
 
     // Incase Firebug isn't installed
-    if (window.console == undefined) { window.console = {log:function(){}}; };
+    if (window.console === undefined) { window.console = {log:function(){}}; }
 
     var mouseover = function(ev) {
         ev.stopPropagation();
@@ -41,7 +39,7 @@ paulisageek.ns.nodeSelector = function () {
         ev.stopPropagation();
         var e = $(ev.target);
         save = e.data("saved");
-        if (typeof(save) == "undefined") return;
+        if (typeof(save) == "undefined") { return; }
         e.removeData("saved");
         for (var i in save) {
             e.css(i, save[i]);
@@ -54,8 +52,8 @@ paulisageek.ns.nodeSelector = function () {
         console.log(xpath);
 
         if (typeof(nsDoneURL) != "undefined") {
-            if (nsDoneURL.indexOf("?") == -1) nsDoneURL += "?";
-            else nsDoneURL += "&";
+            if (nsDoneURL.indexOf("?") == -1) { nsDoneURL += "?"; }
+            else { nsDoneURL += "&"; }
 
             var url = $.param({
                 "xpath" : xpath, 
@@ -68,9 +66,9 @@ paulisageek.ns.nodeSelector = function () {
         }
 
         var node = $("#hover");
-        if (node.size() == 0)  {
+        if (node.size() === 0)  {
             $(document.body).append("<div id='hover'></div>");
-            var node = $("#hover");
+            node = $("#hover");
             node
             .css("position", "absolute")
             .css("display", "inline")
@@ -79,7 +77,7 @@ paulisageek.ns.nodeSelector = function () {
             .css('padding', '2px')
             .css('width', 'auto') 
             .css("zIndex", 255)
-            .click(function(ev) { ev.stopPropagation() });
+            .click(function(ev) { ev.stopPropagation(); });
         }
        
         node.html(xpath); 
@@ -98,7 +96,7 @@ paulisageek.ns.nodeSelector = function () {
     // });
     
     var keydown = function(e) {
-        if (e.keyCode == undefined && e.charCode != undefined) e.keyCode = e.charCode;
+        if (e.keyCode === undefined && e.charCode !== undefined) { e.keyCode = e.charCode; }
         // Escape key
         if (e.keyCode == 27) {
             $("*").each(function(i) {
@@ -123,7 +121,7 @@ paulisageek.ns.nodeSelector = function () {
         while (e.nodeName.toLowerCase() != "html") {
             var node = e.nodeName.toLowerCase();
             var id = e.id;
-            if (id != undefined && id != null && id != "") {
+            if (id !== undefined && id !== null && id !== "") {
                 xpath = "//" + node + "[@id='" + id + "']" + xpath;
                 return xpath;
             }
@@ -149,7 +147,8 @@ paulisageek.ns.nodeSelector = function () {
         xpath = "/html" + xpath;
         return xpath;
     }
-}
+};
+
 paulisageek.ns.addLibs();
 
 }
