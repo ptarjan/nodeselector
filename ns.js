@@ -9,9 +9,11 @@ paulisageek.ns.addLibs = function () {
         return;
     }
 
-    node = document.createElement("script");
-    node.src = "http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js";
-    document.body.appendChild(node);
+    if (typeof($) == "undefined") {
+        node = document.createElement("script");
+        node.src = "http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js";
+        document.body.appendChild(node);
+    }
     paulisageek.ns.nodeSelector();
 } 
 
