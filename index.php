@@ -4,18 +4,18 @@
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
-    <title>Node Selector Bookmarklet</title>
+    <title>nodeSelector Bookmarklet</title>
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/reset/reset-min.css" />
     <link rel="stylesheet" href="/style.css" type='text/css' />  
     
-    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="hand.png" type="image/png" />
 
   </head>
   <body>
 
     <div id='main'>
 
-    <h1>NodeSelector Bookmarklet</h1>
+    <h1>nodeSelector Bookmarklet</h1>
 
     <div class='content'>
 
@@ -45,13 +45,13 @@ Press <b>ESC</b> anytime to stop selecting nodes.
 Profit.
 </li></ol>
 
-<ul><ol>
+<ul><li>
 <a href='http://github.com/ptarjan/nodeselector/'>Open Source (github)</a>
-</ol><ol>
+</li><li>
 <a href='test.html'>See it in action</a>
-</ol><ol>
+</li><li>
 <a href='ns.js'>Read the source</a>
-</ol></ul>
+</li></ul>
 
       </div>
     </div>
