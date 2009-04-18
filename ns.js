@@ -51,15 +51,15 @@ paulisageek.ns.nodeSelector = function () {
         var xpath = getXpath(ev.target);
         console.log(xpath);
 
-        if (typeof(nsDoneURL) != "undefined") {
-            if (nsDoneURL.indexOf("?") == -1) { nsDoneURL += "?"; }
-            else { nsDoneURL += "&"; }
+        if (typeof(__nsDoneURL) != "undefined") {
+            if (__nsDoneURL.indexOf("?") == -1) { __nsDoneURL += "?"; }
+            else { __nsDoneURL += "&"; }
 
             var url = $.param({
                 "xpath" : xpath, 
                 "referer" : window.location.href
             });
-            url = nsDoneURL + url;
+            url = __nsDoneURL + url;
             console.log(url);
             window.location = url;
             return false;
