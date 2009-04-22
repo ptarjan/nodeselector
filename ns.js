@@ -60,11 +60,13 @@ paulisageek.ns.nodeSelector = function () {
         if (typeof(paulisageek.ns.doneURL) != "undefined") {
             if (paulisageek.ns.doneURL.indexOf("?") == -1) { paulisageek.ns.doneURL += "?"; }
             else { paulisageek.ns.doneURL += "&"; }
-
-            var url = $.param({
+            var params = {
                 "xpath" : xpath, 
                 "referer" : window.location.href
-            });
+            };
+            if (typeof paulisageek.ns.params != "undefined") { params['params'] = paulisageek.ns.params; }
+
+            var url = $.param(params);
             url = paulisageek.ns.doneURL + url;
             console.log(url);
             window.location = url;
