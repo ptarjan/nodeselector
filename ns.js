@@ -4,6 +4,8 @@ if (typeof paulisageek.ns == "undefined") { paulisageek.ns = {}; }
 // Don't let 2 instances run
 if (typeof paulisageek.ns.addLibs == "undefined") {
 
+if (typeof paulisageek.ns.caseSensitive == "undefined") { paulisageek.ns.caseSensitive = false; }
+
 paulisageek.ns.addLibs = function () {
     if (typeof(document.body) == "undefined" || document.body === null) {
         setTimeout(paulisageek.ns.addLibs, 100);
@@ -123,7 +125,8 @@ paulisageek.ns.nodeSelector = function () {
         var xpath = "";
     
         while (e.nodeName.toLowerCase() != "html") {
-            var node = e.nodeName.toLowerCase();
+            var node = e.nodeName;
+            if (paulisageek.ns.caseSensitive === false) { node = node.toLowerCase(); }
             var id = e.id;
             if (id !== undefined && id !== null && id !== "") {
                 xpath = "//" + node + "[@id='" + id + "']" + xpath;
