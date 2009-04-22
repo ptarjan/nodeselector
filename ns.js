@@ -131,7 +131,7 @@ paulisageek.ns.nodeSelector = function () {
                 return xpath;
             }
             var parent = e.parentNode;
-            var children = $(parent).find(node);
+            var children = $(parent).children(node);
             if (children.size() > 1) {
                 var good = false;
                 children.each(function(i) {
