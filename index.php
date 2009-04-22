@@ -13,11 +13,11 @@
   </head>
   <body>
 
-    <div id='main'>
-
-    <h1>nodeSelector Bookmarklet</h1>
+    <div id='container'>
 
     <div class='content'>
+
+    <h1>nodeSelector Bookmarklet</h1>
 
 <ol><li>
 Right click and bookmark this: <a href='
