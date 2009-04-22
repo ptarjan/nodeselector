@@ -1,8 +1,9 @@
 if (typeof paulisageek == "undefined") { paulisageek = {}; }
-// Don't let 2 instances run
-if (typeof paulisageek.ns == "undefined") {
+if (typeof paulisageek.ns == "undefined") { paulisageek.ns = {}; }
 
-paulisageek.ns = {};
+// Don't let 2 instances run
+if (typeof paulisageek.ns.addLibs == "undefined") {
+
 paulisageek.ns.addLibs = function () {
     if (typeof(document.body) == "undefined" || document.body === null) {
         setTimeout(paulisageek.ns.addLibs, 100);
@@ -49,17 +50,20 @@ paulisageek.ns.nodeSelector = function () {
         ev.preventDefault(); ev.stopPropagation();
         var e = $(ev.target);
         var xpath = getXpath(ev.target);
+        if (typeof paulisageek.ns.clickCallback == "function") {
+            xpath = paulisageek.ns.clickCallback(xpath);
+        }
         console.log(xpath);
 
-        if (typeof(__nsDoneURL) != "undefined") {
-            if (__nsDoneURL.indexOf("?") == -1) { __nsDoneURL += "?"; }
-            else { __nsDoneURL += "&"; }
+        if (typeof(paulisageek.ns.doneURL) != "undefined") {
+            if (paulisageek.ns.doneURL.indexOf("?") == -1) { paulisageek.ns.doneURL += "?"; }
+            else { paulisageek.ns.doneURL += "&"; }
 
             var url = $.param({
                 "xpath" : xpath, 
                 "referer" : window.location.href
             });
-            url = __nsDoneURL + url;
+            url = paulisageek.ns.doneURL + url;
             console.log(url);
             window.location = url;
             return false;
