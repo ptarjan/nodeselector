@@ -52,9 +52,6 @@ paulisageek.ns.nodeSelector = function () {
         ev.preventDefault(); ev.stopPropagation();
         var e = $(ev.target);
         var xpath = getXpath(ev.target);
-        if (typeof paulisageek.ns.clickCallback == "function") {
-            xpath = paulisageek.ns.clickCallback(xpath);
-        }
         console.log(xpath);
 
         if (typeof(paulisageek.ns.doneURL) != "undefined") {
@@ -125,14 +122,14 @@ paulisageek.ns.nodeSelector = function () {
 
     function getXpath(e) {
         var xpath = "";
-    
+        var oldE = e;
         while (e.nodeName.toLowerCase() != "html") {
             var node = e.nodeName;
             if (paulisageek.ns.caseSensitive === false) { node = node.toLowerCase(); }
             var id = e.id;
             if (id !== undefined && id !== null && id !== "") {
                 xpath = "//" + node + "[@id='" + id + "']" + xpath;
-                return xpath;
+                break;
             }
             var parent = e.parentNode;
             var children = $(parent).children(node);
@@ -153,7 +150,10 @@ paulisageek.ns.nodeSelector = function () {
             xpath = "/" + node + xpath;
             e = parent;
         }
-        xpath = "/html" + xpath;
+        if (xpath.substring(0, 2) != "//") { xpath = "/html" + xpath; }
+        if (typeof paulisageek.ns.getXpath == "function") {
+            xpath = paulisageek.ns.getXpath(oldE, xpath);
+        }
         return xpath;
     }
 };
