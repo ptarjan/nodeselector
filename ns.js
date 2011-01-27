@@ -1,5 +1,3 @@
-
-
 if (typeof nodeselector == "undefined") { nodeselector = {}; }
 if (typeof nodeselector.ns == "undefined") { nodeselector.ns = {}; }
 
@@ -107,7 +105,7 @@ nodeselector.ns.nodeSelector = function () {
         .click(click);
     });
 
-    var keydown = function(e) {
+    /*var keydown = function(e) {
         if (e.keyCode === undefined && e.charCode !== undefined) { e.keyCode = e.charCode; }
         // Escape key
         if (e.keyCode == 27) {
@@ -125,8 +123,46 @@ nodeselector.ns.nodeSelector = function () {
             delete nodeselector.ns;
         }
     };
-    $(document).keydown(keydown);
+    $(document).keydown(keydown);*/
 
+    function getXpath(e) {
+        var xpath = "";
+        var oldE = e;
+        while (e.nodeName.toLowerCase() != "html") {
+            var node = e.nodeName;
+            if (nodeselector.ns.caseSensitive === false) { node = node.toLowerCase(); }
+            var id = e.id;
+            if (id !== undefined && id !== null && id !== "") {
+                xpath = "//" + node + "[@id='" + id + "']" + xpath;
+                break;
+            }
+            var parent = e.parentNode;
+            var children = $(parent).children(node);
+            if (children.size() > 1) {
+                var good = false;
+                children.each(function(i) {
+                    if (this == e) {
+                        node = node + "[" + (i+1) + "]";
+                        good = true;
+                        return false;
+                    }
+                });
+                if (! good) {
+                    console.log("Can't find child, something is wrong with your dom : " + node);
+                    return FALSE;
+                }
+            }
+            xpath = "/" + node + xpath;
+            e = parent;
+        }
+        if (xpath.substring(0, 2) != "//") { xpath = "/html" + xpath; }
+        if (typeof nodeselector.ns.getXpath == "function") {
+            xpath = nodeselector.ns.getXpath(oldE, xpath);
+        }
+        return xpath;
+    }
+/*  //source: http://snippets.dzone.com/posts/show/4349
+    // simpler version than original getXpath
     function getXpath(elt) {
     var path = '';
         for (; elt && elt.nodeType==1; elt=elt.parentNode) {
@@ -136,7 +172,7 @@ nodeselector.ns.nodeSelector = function () {
         }
         return path;
     }
-
+*/
 };
 
 // When all the DOM elements can be manipulated, run the functions.
@@ -144,5 +180,4 @@ $(document).ready(
     function() {
         nodeselector.ns.addLibs();
     });
-
 }
