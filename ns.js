@@ -1,70 +1,76 @@
-if (typeof paulisageek == "undefined") { paulisageek = {}; }
-if (typeof paulisageek.ns == "undefined") { paulisageek.ns = {}; }
 
-// Don't let 2 instances run
-if (typeof paulisageek.ns.addLibs == "undefined") {
 
-if (typeof paulisageek.ns.caseSensitive == "undefined") { paulisageek.ns.caseSensitive = false; }
+if (typeof nodeselector == "undefined") { nodeselector = {}; }
+if (typeof nodeselector.ns == "undefined") { nodeselector.ns = {}; }
 
-paulisageek.ns.addLibs = function () {
-    if (typeof(document.body) == "undefined" || document.body === null) {
-        setTimeout(paulisageek.ns.addLibs, 100);
-        return;
-    }
+// disallow multiple instances
+if (typeof nodeselector.ns.addLibs == "undefined") {
 
+if (typeof nodeselector.ns.caseSensitive == "undefined") { nodeselector.ns.caseSensitive = false; }
+
+nodeselector.ns.addLibs = function () {
     var node = document.createElement("script");
-    node.src = "http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js";
+    node.src = "https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js";
     document.body.appendChild(node);
-    paulisageek.ns.nodeSelector();
+    nodeselector.ns.nodeSelector();
 };
 
-paulisageek.ns.nodeSelector = function () {  
-    if (typeof($) == "undefined" || $("*") === null) {
-        setTimeout(paulisageek.ns.nodeSelector, 100);
-        return;
-    }
-
-    // Incase Firebug isn't installed
+nodeselector.ns.nodeSelector = function () {
+    // In case Firebug isn't installed
     if (window.console === undefined) { window.console = {log:function(){}}; }
 
     var mouseover = function(ev) {
+        if(ev.target != this){
+            return true;
+        }
+        // Prevent usual event handlers from functioning
         ev.stopPropagation();
         var e = $(ev.target);
-        if (typeof e.css("outline") != "undefined") {
-            e.data("saved", {"outline" : e.css("outline")});
-            e.css("outline", "red solid medium");
-        } else {
-            e.data("saved", {"backgroundColor" : e.css("backgroundColor")});
-            e.css("backgroundColor", "#0cf");
-        }
+
+        // We're overwriting any outline information for the element, so save it first.
+        e.data("saved", {"outline-width": e.css("outline-width"), 
+                                "outline-color": e.css("outline-color"), 
+                                "outline-style": e.css("outline-style")});
+
+        // Draw the red outline
+        e.css("outline", "3px solid rgba(255,0,0, 0.7)");
     };
+
     var mouseout = function(ev) {
+        // fix for live (added after page creation) elements
+        if(ev.target != this){
+            return true;
+        }
         ev.stopPropagation();
         var e = $(ev.target);
         save = e.data("saved");
         if (typeof(save) == "undefined") { return; }
-        e.removeData("saved");
+        jQuery.removeData(e, "saved");
         for (var i in save) {
+            console.log("restored: " + i + ", " + save[i]);
             e.css(i, save[i]);
         }
     };
     var click =  function (ev) {
+        if(ev.target != this){
+            return true;
+        }
         ev.preventDefault(); ev.stopPropagation();
         var e = $(ev.target);
         var xpath = getXpath(ev.target);
         console.log(xpath);
 
-        if (typeof(paulisageek.ns.doneURL) != "undefined") {
-            if (paulisageek.ns.doneURL.indexOf("?") == -1) { paulisageek.ns.doneURL += "?"; }
-            else { paulisageek.ns.doneURL += "&"; }
+        if (typeof(nodeselector.ns.doneURL) != "undefined") {
+            if (nodeselector.ns.doneURL.indexOf("?") == -1) { nodeselector.ns.doneURL += "?"; }
+            else { nodeselector.ns.doneURL += "&"; }
             var params = {
                 "xpath" : xpath, 
                 "referer" : window.location.href
             };
-            if (typeof paulisageek.ns.params != "undefined") { params['params'] = paulisageek.ns.params; }
+            if (typeof nodeselector.ns.params != "undefined") { params['params'] = nodeselector.ns.params; }
 
             var url = $.param(params);
-            url = paulisageek.ns.doneURL + url;
+            url = nodeselector.ns.doneURL + url;
             console.log(url);
             window.location = url;
             return false;
@@ -115,7 +121,7 @@ paulisageek.ns.nodeSelector = function () {
             $("#hover").remove();
             $(document).unbind("keydown", keydown);
             // Kill the namespace
-            delete paulisageek.ns;
+            delete nodeselector.ns;
         }
     };
     $(document).keydown(keydown);
@@ -125,7 +131,7 @@ paulisageek.ns.nodeSelector = function () {
         var oldE = e;
         while (e.nodeName.toLowerCase() != "html") {
             var node = e.nodeName;
-            if (paulisageek.ns.caseSensitive === false) { node = node.toLowerCase(); }
+            if (nodeselector.ns.caseSensitive === false) { node = node.toLowerCase(); }
             var id = e.id;
             if (id !== undefined && id !== null && id !== "") {
                 xpath = "//" + node + "[@id='" + id + "']" + xpath;
@@ -151,13 +157,17 @@ paulisageek.ns.nodeSelector = function () {
             e = parent;
         }
         if (xpath.substring(0, 2) != "//") { xpath = "/html" + xpath; }
-        if (typeof paulisageek.ns.getXpath == "function") {
-            xpath = paulisageek.ns.getXpath(oldE, xpath);
+        if (typeof nodeselector.ns.getXpath == "function") {
+            xpath = nodeselector.ns.getXpath(oldE, xpath);
         }
         return xpath;
     }
 };
 
-paulisageek.ns.addLibs();
+// When all the DOM elements can be manipulated, run the functions.
+$(document).ready(
+    function() {
+        nodeselector.ns.addLibs();
+    });
 
 }
