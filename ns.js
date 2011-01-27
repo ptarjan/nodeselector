@@ -45,12 +45,13 @@ nodeselector.ns.nodeSelector = function () {
         var e = $(ev.target);
         save = e.data("saved");
         if (typeof(save) == "undefined") { return; }
-        jQuery.removeData(e, "saved");
+        e.removeData("saved");
         for (var i in save) {
             console.log("restored: " + i + ", " + save[i]);
             e.css(i, save[i]);
         }
     };
+
     var click =  function (ev) {
         if(ev.target != this){
             return true;
@@ -81,31 +82,31 @@ nodeselector.ns.nodeSelector = function () {
             $(document.body).append("<div id='hover'></div>");
             node = $("#hover");
             node
-            .css("position", "absolute")
-            .css("display", "inline")
-            .css('border', '1px solid black')
-            .css('backgroundColor', 'white')
-            .css('padding', '2px')
-            .css('width', 'auto') 
-            .css("zIndex", 255)
+            .css({"position": "absolute",
+                    "display": "inline",
+                    "border": "1px solid black",
+                    "backgroundColor": "white",
+                    "padding": "2px",
+                    "width": "auto", 
+                    "z-index": "255"}).fadeOut(0)
             .click(function(ev) { ev.stopPropagation(); });
         }
-       
-        node.html(xpath); 
+
+        node.html(xpath);
         node.animate({
-            'top' : (e.offset().top) + "px",
-            'left': (e.offset().left) + "px"
-        }, 250);
-    };
-    // $(document).ready(function () {
-        $("*").each(function() {
-            $(this)
-            .mouseover(mouseover)
-            .mouseout(mouseout)
-            .click(click);
-        });
-    // });
-    
+            "top" : (e.offset().top) + "px",
+            "left": (e.offset().left) + "px"
+        }, 250)
+        .fadeIn(250);
+    }; // click
+
+    $("*").each(function() {
+        $(this)
+        .mouseover(mouseover)
+        .mouseout(mouseout)
+        .click(click);
+    });
+
     var keydown = function(e) {
         if (e.keyCode === undefined && e.charCode !== undefined) { e.keyCode = e.charCode; }
         // Escape key
@@ -126,42 +127,16 @@ nodeselector.ns.nodeSelector = function () {
     };
     $(document).keydown(keydown);
 
-    function getXpath(e) {
-        var xpath = "";
-        var oldE = e;
-        while (e.nodeName.toLowerCase() != "html") {
-            var node = e.nodeName;
-            if (nodeselector.ns.caseSensitive === false) { node = node.toLowerCase(); }
-            var id = e.id;
-            if (id !== undefined && id !== null && id !== "") {
-                xpath = "//" + node + "[@id='" + id + "']" + xpath;
-                break;
-            }
-            var parent = e.parentNode;
-            var children = $(parent).children(node);
-            if (children.size() > 1) {
-                var good = false;
-                children.each(function(i) {
-                    if (this == e) {
-                        node = node + "[" + (i+1) + "]";
-                        good = true;
-                        return false;
-                    }
-                });
-                if (! good) {
-                    console.log("Can't find child, something is wrong with your dom : " + node);
-                    return FALSE;
-                }
-            }
-            xpath = "/" + node + xpath;
-            e = parent;
+    function getXpath(elt) {
+    var path = '';
+        for (; elt && elt.nodeType==1; elt=elt.parentNode) {
+            var idx=$(elt.parentNode).children(elt.tagName).index(elt)+1;
+            idx>1 ? (idx='['+idx+']') : (idx='');
+            path='/'+elt.tagName.toLowerCase()+idx+path;
         }
-        if (xpath.substring(0, 2) != "//") { xpath = "/html" + xpath; }
-        if (typeof nodeselector.ns.getXpath == "function") {
-            xpath = nodeselector.ns.getXpath(oldE, xpath);
-        }
-        return xpath;
+        return path;
     }
+
 };
 
 // When all the DOM elements can be manipulated, run the functions.
