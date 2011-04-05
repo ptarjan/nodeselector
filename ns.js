@@ -6,12 +6,43 @@ if (typeof nodeselector.ns.addLibs == "undefined") {
 
 if (typeof nodeselector.ns.caseSensitive == "undefined") { nodeselector.ns.caseSensitive = false; }
 
+//source: http://www.nczonline.net/blog/2009/07/28/the-best-way-to-load-external-javascript/
+function loadScript(url, callback){
+
+    var script = document.createElement("script")
+    script.type = "text/javascript";
+
+    if (script.readyState){  //IE
+        script.onreadystatechange = function(){
+            if (script.readyState == "loaded" ||
+                script.readyState == "complete"){
+                script.onreadystatechange = null;
+                callback();
+            }
+        };
+    } else {  //Others
+        script.onload = function(){
+            callback();
+        };
+    }
+
+    script.src = url;
+    document.getElementsByTagName("head")[0].appendChild(script);
+}
+
 nodeselector.ns.addLibs = function () {
-    var node = document.createElement("script");
-    node.src = "https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js";
-    document.body.appendChild(node);
-    //nodeselector.ns.addShades();
-    nodeselector.ns.nodeSelector();
+    if (typeof jQuery == 'undefined') {
+        loadScript("https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js", function() {
+            $(document).ready( function() {
+                nodeselector.ns.nodeSelector();
+            });
+        });
+    }
+    else {
+        $(document).ready( function() {
+            nodeselector.ns.nodeSelector();
+        });
+    }
 };
 
 nodeselector.ns.addShades = function() {
@@ -201,8 +232,6 @@ nodeselector.ns.nodeSelector = function () {
 };
 
 // When all the DOM elements can be manipulated, run the functions.
-$(document).ready(
-    function() {
-        nodeselector.ns.addLibs();
-    });
+nodeselector.ns.addLibs();
+
 }
