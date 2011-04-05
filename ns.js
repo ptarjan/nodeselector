@@ -45,50 +45,48 @@ nodeselector.ns.startSelector = function() {
     });
 }
 
-nodeselector.ns.addShades = function() {
-    nodeselector.ns.shade = document.createElement("div");
-    nodeselector.ns.shade.setAttribute("id", "nodeselector_shade_helper");
-    nodeselector.ns.shade.style.background = "rgba(0, 0, 0, 0.5)";
-    nodeselector.ns.shade.style.position = "absolute";
-    nodeselector.ns.shade.style.top = "0px";
-    nodeselector.ns.shade.style.left = "0px";
-    nodeselector.ns.shade.style.width = "100%";
-    nodeselector.ns.shade.style.height = "100%";
-    nodeselector.ns.shade.style.visibility = "hidden";
-    nodeselector.ns.shade.style.zIndex = "-1";
-    document.body.appendChild(nodeselector.ns.shade);
-}
-
+nodeselector.ns.currentNode = undefined;
+nodeselector.ns.currentParent = undefined;
 nodeselector.ns.nodeSelector = function () {
     // In case Firebug isn't installed
     if (window.console === undefined) { window.console = {log:function(){}}; }
 
-    var mouseover = function(ev) {
-        if(ev.target != this){
-            return true;
-        }
-        // Prevent usual event handlers from functioning
-        ev.stopPropagation();
-        var e = $(ev.target);
-
+    var select_element = function(e) {
         // We're overwriting any outline information for the element, so save it first.
         e.data("saved", {"outline-width": e.css("outline-width"),
                                 "outline-color": e.css("outline-color"),
                                 "outline-style": e.css("outline-style"),
                                 "z-index"      : e.css("z-index"),
-                                "background-color": e.css("background-color")
+                                "box-shadow"   : e.css("box-shadow")
                             });
-        //e.css("z-index", "9999");
 
-        /*console.log(e.css("background-color"));
-        if (e.css("background-color") == "rgba(0, 0, 0, 0)") {
-            e.css("background-color", "rgba(255, 255, 255, 0.8)");
-        }*/
         // Draw the red outline
-        e.css("outline", "3px solid rgba(255,0,0, 0.7)");
-        //nodeselector.ns.shade.style.visibility = "visible";
+        e.css({
+            "outline": "3px solid rgba(19,83,220, 0.4)",
+            "box-shadow": "0px 0px 20px rgb(0, 0, 0)"
+        });
+    }
+
+    var mouseover = function(ev) {
+        if(ev.target != this || ev.target.tagName == "HTML") {
+            return true;
+        }
+        // Prevent usual event handlers from functioning
+        ev.stopPropagation();
+        var e = $(ev.target);
+        select_element(e);
+        nodeselector.ns.currentNode = e;
+        nodeselector.ns.currentParent = undefined;
     };
 
+    var restore_element = function(e) {
+        save = e.data("saved");
+        if (typeof(save) == "undefined") { return; }
+        e.removeData("saved");
+        for (var i in save) {
+            e.css(i, save[i]);
+        }
+    }
     var mouseout = function(ev) {
         // fix for live (added after page creation) elements
         if(ev.target != this){
@@ -96,14 +94,12 @@ nodeselector.ns.nodeSelector = function () {
         }
         ev.stopPropagation();
         var e = $(ev.target);
-        save = e.data("saved");
-        if (typeof(save) == "undefined") { return; }
-        e.removeData("saved");
-        for (var i in save) {
-            //console.log("restored: " + i + ", " + save[i]);
-            e.css(i, save[i]);
+        restore_element(e);
+        if (nodeselector.ns.currentParent != undefined) {
+            restore_element(nodeselector.ns.currentParent);
         }
-        //nodeselector.ns.shade.style.visibility = "hidden";
+        nodeselector.ns.currentNode = undefined;
+        nodeselector.ns.currentParent = undefined;
     };
 
     var click =  function (ev) {
@@ -112,7 +108,12 @@ nodeselector.ns.nodeSelector = function () {
         }
         ev.preventDefault(); ev.stopPropagation();
         var e = $(ev.target);
-        var xpath = getXpath(ev.target);
+        if (nodeselector.ns.currentParent != undefined) {
+            var xpath = getXpath(nodeselector.ns.currentParent[0]);
+        }
+        else {
+            var xpath = getXpath(ev.target);
+        }
         console.log(xpath);
 
         if (typeof(nodeselector.ns.doneURL) != "undefined") {
@@ -161,7 +162,7 @@ nodeselector.ns.nodeSelector = function () {
         .click(click);
     });
 
-    /*var keydown = function(e) {
+    var keydown = function(e) {
         if (e.keyCode === undefined && e.charCode !== undefined) { e.keyCode = e.charCode; }
         // Escape key
         if (e.keyCode == 27) {
@@ -178,8 +179,22 @@ nodeselector.ns.nodeSelector = function () {
             // Kill the namespace
             delete nodeselector.ns;
         }
+        // ctrl key
+        if (e.keyCode == 17 && nodeselector.ns.currentNode != undefined) {
+            // "deselect" our current hovered element
+            restore_element(nodeselector.ns.currentNode);
+            // if is the first time we're leveling up
+            if (nodeselector.ns.currentParent == undefined) {
+                nodeselector.ns.currentParent = nodeselector.ns.currentNode.parent();
+            }
+            else {
+                restore_element(nodeselector.ns.currentParent);
+                nodeselector.ns.currentParent = nodeselector.ns.currentParent.parent();
+            }
+            select_element(nodeselector.ns.currentParent);
+        }
     };
-    $(document).keydown(keydown);*/
+    $(document).keydown(keydown);
 
     function getXpath(e) {
         var xpath = "";
