@@ -1,0 +1,3 @@
+rm -f ns.min.js
+
+./deploy/JSMin/jsmin <ns.js >ns.min.js "nodeselector @ https://github.com/mcginty/nodeselector"
