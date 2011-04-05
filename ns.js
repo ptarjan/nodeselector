@@ -32,18 +32,18 @@ function loadScript(url, callback){
 
 nodeselector.ns.addLibs = function () {
     if (typeof jQuery == 'undefined') {
-        loadScript("https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js", function() {
-            $(document).ready( function() {
-                nodeselector.ns.nodeSelector();
-            });
-        });
+        loadScript("https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js", nodeselector.ns.startSelector);
     }
     else {
-        $(document).ready( function() {
-            nodeselector.ns.nodeSelector();
-        });
+        nodeselector.ns.startSelector();
     }
 };
+
+nodeselector.ns.startSelector = function() {
+    $(document).ready( function() {
+        nodeselector.ns.nodeSelector();
+    });
+}
 
 nodeselector.ns.addShades = function() {
     nodeselector.ns.shade = document.createElement("div");
