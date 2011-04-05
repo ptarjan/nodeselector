@@ -10,8 +10,23 @@ nodeselector.ns.addLibs = function () {
     var node = document.createElement("script");
     node.src = "https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js";
     document.body.appendChild(node);
+    //nodeselector.ns.addShades();
     nodeselector.ns.nodeSelector();
 };
+
+nodeselector.ns.addShades = function() {
+    nodeselector.ns.shade = document.createElement("div");
+    nodeselector.ns.shade.setAttribute("id", "nodeselector_shade_helper");
+    nodeselector.ns.shade.style.background = "rgba(0, 0, 0, 0.5)";
+    nodeselector.ns.shade.style.position = "absolute";
+    nodeselector.ns.shade.style.top = "0px";
+    nodeselector.ns.shade.style.left = "0px";
+    nodeselector.ns.shade.style.width = "100%";
+    nodeselector.ns.shade.style.height = "100%";
+    nodeselector.ns.shade.style.visibility = "hidden";
+    nodeselector.ns.shade.style.zIndex = "-1";
+    document.body.appendChild(nodeselector.ns.shade);
+}
 
 nodeselector.ns.nodeSelector = function () {
     // In case Firebug isn't installed
@@ -26,12 +41,21 @@ nodeselector.ns.nodeSelector = function () {
         var e = $(ev.target);
 
         // We're overwriting any outline information for the element, so save it first.
-        e.data("saved", {"outline-width": e.css("outline-width"), 
-                                "outline-color": e.css("outline-color"), 
-                                "outline-style": e.css("outline-style")});
+        e.data("saved", {"outline-width": e.css("outline-width"),
+                                "outline-color": e.css("outline-color"),
+                                "outline-style": e.css("outline-style"),
+                                "z-index"      : e.css("z-index"),
+                                "background-color": e.css("background-color")
+                            });
+        //e.css("z-index", "9999");
 
+        /*console.log(e.css("background-color"));
+        if (e.css("background-color") == "rgba(0, 0, 0, 0)") {
+            e.css("background-color", "rgba(255, 255, 255, 0.8)");
+        }*/
         // Draw the red outline
         e.css("outline", "3px solid rgba(255,0,0, 0.7)");
+        //nodeselector.ns.shade.style.visibility = "visible";
     };
 
     var mouseout = function(ev) {
@@ -45,9 +69,10 @@ nodeselector.ns.nodeSelector = function () {
         if (typeof(save) == "undefined") { return; }
         e.removeData("saved");
         for (var i in save) {
-            console.log("restored: " + i + ", " + save[i]);
+            //console.log("restored: " + i + ", " + save[i]);
             e.css(i, save[i]);
         }
+        //nodeselector.ns.shade.style.visibility = "hidden";
     };
 
     var click =  function (ev) {
